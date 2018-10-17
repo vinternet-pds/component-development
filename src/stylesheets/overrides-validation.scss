@@ -1,0 +1,72 @@
+// Import Pugin settings
+@import 'node_modules/parliamentuk-pugin/src/stylesheets/main.scss';
+
+// Input wrappers
+
+form > :last-child {
+  border-bottom: none;
+}
+
+.input-wrapper, .input-group__extended {
+  margin-bottom: $base-spacing-unit-extra-large;
+  border-bottom: solid 1px $grey-3;
+  & > :last-child {
+    margin-bottom: $base-spacing-unit-extra-large;
+  }
+}
+
+.input-group__standard {
+  display: block;
+}
+
+.input-group__inline {
+  margin-bottom: $base-spacing-unit-small;
+}
+
+legend {
+  margin-bottom: $base-spacing-unit-small;
+}
+
+/**** Needs Adding Into Pugin ****/
+
+input[type="submit"] {
+  cursor: pointer;
+}
+
+// Form error messaging
+
+.message--error {
+  color: $warning--dark;
+  + input,
+  + textarea {
+    border: solid 2px $warning--dark;
+    box-shadow: none;
+    &:focus {
+      box-shadow: 0 0 0 3px $warning--dark;
+    }
+  }
+  + select {
+    outline: solid 2px $warning--dark;
+    outline-offset: -2px;
+    box-shadow: none;
+    &:focus {
+      outline: 5px solid $warning--dark;
+      outline-offset: -2px;
+    }
+  }
+  + [class*="input-group"] {
+    > input {
+      //&[type="radio"]:checked + label:before,
+      //&[type="radio"]:not(:checked) + label:before,
+      &[type="checkbox"]:checked + label:before,
+      &[type="checkbox"]:not(:checked) + label:before {
+        border: solid 2px $warning--dark;
+        box-shadow: none;
+      }
+      //&[type="radio"]:focus + label::before,
+      &[type="checkbox"]:focus + label::before {
+        box-shadow: 0 0 0 3px $warning--dark;
+      }
+    }
+  }
+}

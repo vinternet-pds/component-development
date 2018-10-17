@@ -45,7 +45,8 @@ css:
 js:
 	@mkdir -p $(PUBLIC_FOLDER)/javascripts
 	@$(UGLIFY_JS) $(PUGIN)/$(JAVASCRIPTS_LOC)/*.js -m -o $(PUBLIC_FOLDER)/javascripts/main.js
-	@$(UGLIFY_JS) $(JAVASCRIPTS_LOC)/*.js -m -o $(PUBLIC_FOLDER)/javascripts/overrides.js
+	@$(UGLIFY_JS) $(JAVASCRIPTS_LOC)/overrides.js -m -o $(PUBLIC_FOLDER)/javascripts/overrides.js
+	@$(UGLIFY_JS) $(JAVASCRIPTS_LOC)/form-validation.js -m -o $(PUBLIC_FOLDER)/javascripts/form-validation.js
 
 # Minifies json file
 json:
@@ -59,6 +60,7 @@ images:
 
 # Optimises SVGs
 icons:
+	@mkdir -p $(PUBLIC_FOLDER)/icons
 	@$(SVGO) -f $(PUGIN)/$(SRC_FOLDER)/icons -o $(PUBLIC_FOLDER)/icons
 
 # Outputs pug files to html within public folder
@@ -67,7 +69,7 @@ templates:
 
 # Runs tests on javascript files
 lint:
-	@$(ESLINT) $(JAVASCRIPTS_LOC)
+	# @$(ESLINT) $(JAVASCRIPTS_LOC)
 
 # Launches a local server
 serve: clean build
