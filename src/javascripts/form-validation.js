@@ -1,82 +1,122 @@
-// Function to enhance client side form validation
+// Parent function to scope enhanced client side form validation
 UK_Parliament.formValidation = function () {
 
-  if (document.querySelector('input[required]:not([type="search"])')) {
+  if (document.querySelector('[required]')) {
 
-    // Grab all required input omitting the global search input
-    var requiredFields = document.querySelectorAll('[required]:not([type="search"])');
+    // Main function to check input validity and handle correct state
+    inputValidationCheck = function (elm) {
+      var element = this;
+      var elementParent = this.parentElement;
+      var elementValidity = this.validity;
+      var elementType = this.getAttribute('type');
+      var elementTarget;
+      var errorBlock;
 
-    checkUserInput = function (e) {
+      // Funtion to identify and capture correct DOM location for inserting error message
+      inputErrorPosition = function (elm, elp) {
+        if (elementParent.className.match(/input-group/)) {
+          elementTarget = elementParent.previousElementSibling;
+        } else {
+          elementTarget = element.previousElementSibling;
+        }
 
-      var
-        elemValidity = this.validity,
-        elemParent = this.parentElement,
-        elemTarget,
-        elemTargetInline;
+        return elementTarget;
+      };
 
-      console.log(elemParent);
+      inputErrorPosition(element, elementParent);
 
-      if (elemParent.classList.contains('input-group') || elemParent.classList.contains('input-group__inline') || elemParent.classList.contains('input-group__verbose')) {
-        elemTarget = elemParent.previousElementSibling;
-        elemTargetInline = true;
-      } else {
-        elemTarget = this.previousElementSibling;
-      }
+      // Function to add error message and custom validity if it doesn't already exist
+      var inputErrorApplication = function (elm) {
+        if (!elementTarget || !elementTarget.classList.contains('message--error')) {
+          elementTarget.insertAdjacentElement('afterend', errorBlock);
+        } else {
+          return;
+        }
+      };
 
-      // If invalid or change event listener is fired run validity check
-      if (elemValidity.valueMissing === true || elemValidity.patternMismatch === true) {
+      //console.log(elementTarget);
 
-        // Construct inline error message
-        var
-          elemIdError = (this.getAttribute('id') + 'Error'),
-          errorText = this.getAttribute('data-error'),
-          errorMessage = document.createElement('p');
+      // Function to check input validity and handle associated feedback
+      inputErrorManagement = function (elm, elt) {
 
-        // Set aria attritbute on invalid input field
-        this.setAttribute('aria-invalid', 'true');
-        this.setAttribute('aria-describedby', elemIdError);
+        //console.log(elementType);
 
-        errorMessage.innerHTML = errorText;
-        errorMessage.classList.add('message--error');
-        errorMessage.setAttribute('id', elemIdError);
-        errorMessage.setAttribute('aria-live', 'polite');
+        // If event listener is fired input validity check fails
+        if (elementValidity.valueMissing === true || elementValidity.patternMismatch === true) {
 
-        // Add error message and custom validity if it doesn't already exist
-        if (!elemTarget || !elemTarget.classList.contains('message--error')) {
+          var elementReference = (element.getAttribute('name'));
+          var errorText = element.getAttribute('data-error');
 
-          // Check if target element is within input group wrapper
-          if (elemTargetInline === true) {
-            elemParent.insertAdjacentElement('beforebegin', errorMessage);
-          } else {
-            elemParent.insertBefore(errorMessage, this);
+          // Set ARIA attritbutes on invalid input
+          element.setAttribute('aria-invalid', 'true');
+          element.setAttribute('aria-describedby', elementReference);
+
+          // Set custom validity message on invalid input
+          element.setCustomValidity(errorText);
+
+          if (element.hasAttribute('data-error')) {
+            // Construct inline error message
+            errorBlock = document.createElement('p');
+            errorBlock.innerHTML = errorText;
+            errorBlock.classList.add('message--error');
+            errorBlock.setAttribute('id', elementReference);
+            errorBlock.setAttribute('aria-live', 'polite');
+
+            inputErrorApplication(errorBlock);
           }
 
-          this.setCustomValidity(errorText);
+
+
+        } else if (elementType == 'radio' && element.hasAttribute('aria-invalid')) {
+          console.log(elementType);
+
+          // Grab name of radio group and then collection of same name
+          var ic = element.getAttribute('name');
+          console.log('ic = ' + ic);
+          var ica = document.getElementsByName(ic);
+          console.log(ica);
+
+
+        // If event listener is fired input validity check passes
+        } else if (element.hasAttribute('aria-invalid')) {
+          // Reset custom validity message
+          element.setCustomValidity('');
+
+          // Remove ARIA attributes from invalid input
+          element.removeAttribute('aria-invalid');
+          element.removeAttribute('aria-describedby');
+
+          // Remove inline error message
+          elementTarget.remove();
+
         } else {
-          return false;
+          return;
         }
-      }
+      };
 
-      // If change event listener is fired and input passes validity checks
-      else {
+      inputErrorManagement(element, elementType);
 
-        // Reset custom validity message
-        this.setCustomValidity('');
+    };
 
-        // Check for aria attributes, remove them and associated inline error message
-        if (this.hasAttribute('aria-invalid')) {
-          this.removeAttribute('aria-invalid');
-          this.removeAttribute('aria-describedby');
-          elemTarget.remove();
-        }
+    // Function to identify, collect and manage event listeners on required inputs
+    inputCollection = function () {
+      // Grab all required inputs and covert to array
+      var inputNodes = document.querySelectorAll('[required]');
+      var inputsArray = Array.from(inputNodes);
+
+      // Filter array removing search and postcode inputs
+      var inputsRequired = inputsArray.filter(function (input) {
+        return input.type !== 'search' && input.name !== 'postcode';
+      });
+
+      // Add event listeners on all remaining required inputs
+      for (var x = 0; x < inputsRequired.length; x++) {
+        inputsRequired[x].addEventListener('invalid', inputValidationCheck, false);
+        inputsRequired[x].addEventListener('change', inputValidationCheck, false);
       }
     };
 
-    // Add event listeners on all required input fields
-    for (var x = 0; x < requiredFields.length; x++) {
-      requiredFields[x].addEventListener('invalid', checkUserInput, false);
-      requiredFields[x].addEventListener('change', checkUserInput, false);
-    }
+    inputCollection();
   }
 };
 

@@ -15,22 +15,14 @@ form > :last-child {
   }
 }
 
-.input-group__standard {
-  display: block;
-}
-
 .input-group__inline {
-  margin-bottom: $base-spacing-unit-small;
-}
-
-legend {
   margin-bottom: $base-spacing-unit-small;
 }
 
 /**** Needs Adding Into Pugin ****/
 
 input[type="submit"] {
-  cursor: pointer;
+  //cursor: pointer;
 }
 
 // Form error messaging
@@ -55,7 +47,7 @@ input[type="submit"] {
     }
   }
   + [class*="input-group"] {
-    > input {
+    input {
       //&[type="radio"]:checked + label:before,
       //&[type="radio"]:not(:checked) + label:before,
       &[type="checkbox"]:checked + label:before,
@@ -66,6 +58,7 @@ input[type="submit"] {
       //&[type="radio"]:focus + label::before,
       &[type="checkbox"]:focus + label::before {
         box-shadow: 0 0 0 3px $warning--dark;
+        outline: none;
       }
     }
   }
